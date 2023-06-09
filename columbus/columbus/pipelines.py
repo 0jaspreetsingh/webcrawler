@@ -48,9 +48,10 @@ class MetadataPipeline:
                 'title': item['title'],
                 'last_modified_date': item['last_modified_date'],
                 'description': item['description'],
-                'document_link': item['document_link'],
                 'company_name': item['company_name']
             }
+            if item.get('document_link'):
+                meta_data['document_link'] = item['document_link']
             json.dump(meta_data, f, sort_keys=True, indent=4)
 
         return item

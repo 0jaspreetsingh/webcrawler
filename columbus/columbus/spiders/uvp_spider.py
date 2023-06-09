@@ -2,14 +2,15 @@ from pathlib import Path
 import re
 
 import scrapy
+from columbus.settings import MAX_DOCUMENTS_TO_PROCESS
 
 from columbus.items import ProjectItem
 
 
-class ProjectsSpider(scrapy.Spider):
-    name = "projects"
+class UvpSpider(scrapy.Spider):
+    name = "uvp"
     count = 0
-    documents_to_process = 5
+    documents_to_process = MAX_DOCUMENTS_TO_PROCESS
 
     def start_requests(self):
         urls = [
