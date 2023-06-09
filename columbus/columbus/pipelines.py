@@ -5,9 +5,50 @@
 
 
 # useful for handling different item types with a single interface
+import os
 from itemadapter import ItemAdapter
-
+import json
+from scrapy.exporters import JsonItemExporter
+import zipfile
 
 class ColumbusPipeline:
     def process_item(self, item, spider):
         return item
+
+class ProjectPipeline:
+    def process_item(self, item, spider):
+        project_id = item['project_id']
+        html_page = item['html_page']
+        domain = item['project_url'].split('/')[2]
+        directory = f'out/{domain}/{project_id}'
+        os.makedirs(directory, exist_ok=True)
+
+        # Save the HTML document to the directory
+        html_document_path = os.path.join(directory, f'document.html')
+        with open(html_document_path, 'wb') as f:
+            f.write(item['html_page'])
+
+        # save meta data
+        meta_info_path = os.path.join(directory,'Meta Information')
+        os.makedirs(meta_info_path, exist_ok=True)
+        
+        with open(f'{meta_info_path}/info.json' , 'w') as f:
+            meta_data = {'project_id': item['project_id'], 'title': item['title'], 'last_modified_date': item['last_modified_date'], 'description':item['description'], 'document_link': item['document_link'] }
+            json.dump(meta_data, f, sort_keys=True, indent=4)
+
+        # save document
+        if item.get('document'):
+            document_path = os.path.join(directory, 'Zip')
+            os.makedirs(document_path, exist_ok=True)
+            doc_path = f"{document_path}/{item['document_name']}"
+            with open(doc_path, 'wb') as f:
+                f.write(item['document'])
+            if item['document_type'].startswith('zip'):
+                # Unzip the file
+                with zipfile.ZipFile(doc_path, 'r') as zip_ref:
+                    # Extract the contents of the zip file to a directory
+                    zip_ref.extractall(document_path)
+
+
+        return item
+    
