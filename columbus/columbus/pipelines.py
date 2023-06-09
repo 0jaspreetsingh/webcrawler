@@ -10,6 +10,7 @@ from itemadapter import ItemAdapter
 import json
 from scrapy.exporters import JsonItemExporter
 import zipfile
+from columbus.settings import OUT_DIR
 
 class ColumbusPipeline:
     def process_item(self, item, spider):
@@ -22,7 +23,7 @@ class HtmlPipeline:
         project_id = item['project_id']
         html_page = item['html_page']
         domain = item['project_url'].split('/')[2]
-        directory = f'out/{domain}/{project_id}'
+        directory =  os.path.join(OUT_DIR,domain, project_id)
         os.makedirs(directory, exist_ok=True)
 
         # Save the HTML document to the directory
@@ -38,7 +39,7 @@ class MetadataPipeline:
     def process_item(self, item, spider):
         project_id = item['project_id']
         domain = item['project_url'].split('/')[2]
-        directory = f'out/{domain}/{project_id}'
+        directory = os.path.join(OUT_DIR,domain, project_id)
         meta_info_path = os.path.join(directory, 'Meta Information')
         os.makedirs(meta_info_path, exist_ok=True)
         
@@ -63,7 +64,7 @@ class DocumentPipeline:
     def process_item(self, item, spider):
         project_id = item['project_id']
         domain = item['project_url'].split('/')[2]
-        directory = f'out/{domain}/{project_id}'
+        directory = os.path.join(OUT_DIR,domain, project_id)
 
         # Save document
         if item.get('document'):
