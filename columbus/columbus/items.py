@@ -29,3 +29,4 @@ class ProjectItem(scrapy.Item):
     document_link = scrapy.Field()
     document_type = scrapy.Field()
     document_name = scrapy.Field()
+    company_name = scrapy.Field()

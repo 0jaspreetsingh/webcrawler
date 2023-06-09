@@ -64,7 +64,9 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "columbus.pipelines.ColumbusPipeline": 300,
-   "columbus.pipelines.ProjectPipeline": 301,
+   "columbus.pipelines.HtmlPipeline": 301,
+   "columbus.pipelines.MetadataPipeline": 302,
+   "columbus.pipelines.DocumentPipeline": 303,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

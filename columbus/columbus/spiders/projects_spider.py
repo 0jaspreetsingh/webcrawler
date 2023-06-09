@@ -38,6 +38,7 @@ class ProjectsSpider(scrapy.Spider):
     def parse_project(self,  response):
         
         project_item = ProjectItem()
+        project_item['company_name'] = response.css('div.teaser-logo-partner img::attr(title)').get()
         project_item['project_id'] = response.url.split("=")[-1]
         project_item['project_url'] = response.url
         project_item['title'] = response.css("h1::text").get()

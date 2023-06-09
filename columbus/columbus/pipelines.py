@@ -13,9 +13,11 @@ import zipfile
 
 class ColumbusPipeline:
     def process_item(self, item, spider):
-        return item
+        return item 
 
-class ProjectPipeline:
+class HtmlPipeline:
+    """save project's html file to local file system
+    """
     def process_item(self, item, spider):
         project_id = item['project_id']
         html_page = item['html_page']
@@ -28,15 +30,41 @@ class ProjectPipeline:
         with open(html_document_path, 'wb') as f:
             f.write(item['html_page'])
 
-        # save meta data
-        meta_info_path = os.path.join(directory,'Meta Information')
+        return item
+    
+class MetadataPipeline:
+    """save metadata to local fle system
+    """
+    def process_item(self, item, spider):
+        project_id = item['project_id']
+        domain = item['project_url'].split('/')[2]
+        directory = f'out/{domain}/{project_id}'
+        meta_info_path = os.path.join(directory, 'Meta Information')
         os.makedirs(meta_info_path, exist_ok=True)
         
         with open(f'{meta_info_path}/info.json' , 'w') as f:
-            meta_data = {'project_id': item['project_id'], 'title': item['title'], 'last_modified_date': item['last_modified_date'], 'description':item['description'], 'document_link': item['document_link'] }
+            meta_data = {
+                'project_id': item['project_id'],
+                'title': item['title'],
+                'last_modified_date': item['last_modified_date'],
+                'description': item['description'],
+                'document_link': item['document_link'],
+                'company_name': item['company_name']
+            }
             json.dump(meta_data, f, sort_keys=True, indent=4)
 
-        # save document
+        return item
+
+
+class DocumentPipeline:
+    """save documents downloaded and unzips
+    """
+    def process_item(self, item, spider):
+        project_id = item['project_id']
+        domain = item['project_url'].split('/')[2]
+        directory = f'out/{domain}/{project_id}'
+
+        # Save document
         if item.get('document'):
             document_path = os.path.join(directory, 'Zip')
             os.makedirs(document_path, exist_ok=True)
@@ -49,6 +77,4 @@ class ProjectPipeline:
                     # Extract the contents of the zip file to a directory
                     zip_ref.extractall(document_path)
 
-
         return item
-    
